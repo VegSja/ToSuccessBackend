@@ -10,7 +10,6 @@ class token_validation:
 
     def validate(self):
         try:
-            print("TOKEN: " + self.token)
             idinfo = id_token.verify_oauth2_token(self.token, requests.Request(), os.getenv('GOOGLE_CLIENT_ID'))
 
             #Get the user's Google Account ID from the decoded token

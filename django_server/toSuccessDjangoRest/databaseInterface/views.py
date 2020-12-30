@@ -1,6 +1,7 @@
 from databaseInterface.models import Activity
 from databaseInterface.serializers import ActivitySerializer
 from databaseInterface.token_validation import token_validation
+from .database_interaction import retrieve_activities_from_db
 
 from rest_framework.parsers import JSONParser
 from rest_framework.views import APIView
@@ -25,35 +26,24 @@ class activity_list_view(APIView):
 
 
     def get(self, request):
+        user = request.user.username
         date_requested = request.GET.get('date', '')
-        print("DATE requested: ", date_requested)
-        activities = Activity.objects.filter(user=request.user.username, date=date_requested)
-        serializer = ActivitySerializer(activities, many=True)
+        number_of_days_requested = request.GET.get('nb_days', '')
+        print("Recived GET request", user, date_requested, number_of_days_requested)
+        serializer = retrieve_activities_from_db(user, date_requested, number_of_days_requested)
         return JsonResponse(serializer.data, safe=False)
-    
+        
     def post(self, request):
         username = request.user.username
-        print("USER : " + username + " Sent a post request")
         data = JSONParser().parse(request)
         ##NOTE: THIS IS JUST FOR THE SAKE OF TRYING SOMETHING. SHOULD BE CHANGED
         data['user'] = username
-        self.userDataExist(username)
         data_to_save = {}
-        print(data)
         serializer = ActivitySerializer(data=data)
         if serializer.is_valid():
             serializer.save()
             return JsonResponse(serializer.data, status=201)
         return JsonResponse(serializer.errors, status=400)
-
-    def userDataExist(self, username):
-        try:
-            activities_from_db = Activity.objects.filter(user=username)
-            data = ActivitySerializer(data=activities_from_db, many=True)
-            print(data.data)
-        except e:
-            print("Error on data retrieval from database: ", e)
-
 
 class GoogleView(APIView):
     def post(self, request):
@@ -87,7 +77,6 @@ class activity_detail(APIView):
 
     #This method is mainly used for deleting activities
     def delete(self, request, name):
-        print("Activity detail called METHOD: " + request.method)
         print("USER : " + request.user.username + " Sent a delete request")
 
         print("Trying to delete: " + request.user.username)
