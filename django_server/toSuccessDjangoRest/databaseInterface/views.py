@@ -40,6 +40,7 @@ class activity_list_view(APIView):
         data['user'] = username
         data_to_save = {}
         serializer = ActivitySerializer(data=data)
+        print("Recived POST request", username)
         if serializer.is_valid():
             serializer.save()
             return JsonResponse(serializer.data, status=201)
