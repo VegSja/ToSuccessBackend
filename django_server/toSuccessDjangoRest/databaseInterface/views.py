@@ -17,12 +17,17 @@ from django.http import HttpResponse, JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 import requests
 
+from datetime import date
+from datetime import datetime
+
 class activity_list_view(APIView):
     permission_classes = (IsAuthenticated,)
 
 
     def get(self, request):
-        activities = Activity.objects.filter(user=request.user.username)
+        date_requested = request.GET.get('date', '')
+        print("DATE requested: ", date_requested)
+        activities = Activity.objects.filter(user=request.user.username, date=date_requested)
         serializer = ActivitySerializer(activities, many=True)
         return JsonResponse(serializer.data, safe=False)
     
@@ -32,12 +37,22 @@ class activity_list_view(APIView):
         data = JSONParser().parse(request)
         ##NOTE: THIS IS JUST FOR THE SAKE OF TRYING SOMETHING. SHOULD BE CHANGED
         data['user'] = username
+        self.userDataExist(username)
+        data_to_save = {}
         print(data)
         serializer = ActivitySerializer(data=data)
         if serializer.is_valid():
             serializer.save()
             return JsonResponse(serializer.data, status=201)
         return JsonResponse(serializer.errors, status=400)
+
+    def userDataExist(self, username):
+        try:
+            activities_from_db = Activity.objects.filter(user=username)
+            data = ActivitySerializer(data=activities_from_db, many=True)
+            print(data.data)
+        except e:
+            print("Error on data retrieval from database: ", e)
 
 
 class GoogleView(APIView):
@@ -88,3 +103,10 @@ class activity_detail(APIView):
         if request.method == 'DELETE':
             activity.delete()
             return HttpResponse(status=status.HTTP_204_NO_CONTENT)
+
+class date_view(APIView):
+    def get(self, request):
+        response = {}
+        response["date"] = date.today()
+        response["daynumber"] = datetime.now().timetuple().tm_yday
+        return Response(response)

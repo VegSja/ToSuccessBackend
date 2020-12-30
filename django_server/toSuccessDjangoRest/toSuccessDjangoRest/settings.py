@@ -25,7 +25,7 @@ SECRET_KEY = '*i(7)0gy6w#stc7+^%%ejpk6%+j+4=ihc8zd%p(g&2wl8lm85%'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ["0.0.0.0", "62.16.199.208", "10.0.0.18"]
+ALLOWED_HOSTS = ["0.0.0.0", "62.16.199.208", "10.0.0.18", "vegsja.pythonanywhere.com"]
 
 
 # Application definition
@@ -38,13 +38,14 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'databaseInterface',
-
+    'corsheaders',
     'rest_framework',
     'rest_framework.authtoken',
 ]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -85,6 +86,10 @@ DATABASES = {
     }
 }
 
+#CORS
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:3000",
+]
 
 # Password validation
 # https://docs.djangoproject.com/en/3.0/ref/settings/#auth-password-validators
