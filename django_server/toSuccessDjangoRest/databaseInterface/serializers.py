@@ -1,4 +1,4 @@
-from databaseInterface.models import Activity, Category, CategoryStats
+from databaseInterface.models import Activity, Category, Stats
 from rest_framework import serializers
 
 class ActivitySerializer(serializers.ModelSerializer):
@@ -14,5 +14,5 @@ class CategorySerializer(serializers.ModelSerializer):
 
 class StatsSerializer(serializers.ModelSerializer):
     class Meta:
-        model = CategoryStats
-        fields = ['category_name']
+        model = Stats
+        fields = ['username']

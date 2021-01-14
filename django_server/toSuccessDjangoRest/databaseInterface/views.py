@@ -1,7 +1,8 @@
-from databaseInterface.models import Activity, Category
-from databaseInterface.serializers import ActivitySerializer, CategorySerializer
+from databaseInterface.models import Activity, Category, Stats
+from databaseInterface.serializers import ActivitySerializer, CategorySerializer, StatsSerializer
 from databaseInterface.token_validation import token_validation
 from .database_interaction import retrieve_activities_from_db, retrieve_categories_from_db
+from .manage_stats import main
 
 from rest_framework.parsers import JSONParser
 from rest_framework.views import APIView
@@ -142,6 +143,18 @@ class category_detail(APIView):
         if request.method == 'DELETE':
             category.delete()
             return HttpResponse(status=status.HTTP_204_NO_CONTENT)
+
+
+class stats_view(APIView):
+    permission_classes = (IsAuthenticated,)
+
+    def get(self, request):
+        main() #Just to test the writing and format of the data
+        stats = stats.objects.all() #Change this further down the line
+        serializer = StatsSerializer(stats)
+        return JsonResponse(serializer.data)
+
+
 class date_view(APIView):
     def get(self, request):
         response = {}

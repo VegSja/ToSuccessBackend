@@ -1,4 +1,5 @@
 from django.db import models
+from jsonfield import JSONField
 import random
 
 # Create your models here.
@@ -25,13 +26,6 @@ class Category(models.Model):
         ordering = ['created']
 
 # For stats page
-class CategoryStats(models.Model):
-    name = models.CharField(max_length=50)
-
-    class meta:
-        ordering = ['created']
-
-class KeyVal(models.Model):
-    container = models.ForeignKey(CategoryStats, db_index=True, on_delete=models.DO_NOTHING)
-    date = models.CharField(max_length=240, db_index=True)
-    time_value = models.CharField(max_length=240, db_index=True)
+class Stats(models.Model):
+    username = models.CharField(max_length=250)
+    data = JSONField()
