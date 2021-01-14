@@ -1,5 +1,5 @@
-from databaseInterface.models import Activity
-from databaseInterface.serializers import ActivitySerializer
+from databaseInterface.models import Activity, Category
+from databaseInterface.serializers import ActivitySerializer, CategorySerializer
 
 import calendar
 import datetime
@@ -16,4 +16,9 @@ def retrieve_activities_from_db(user_request, daynumber, number_of_days):
            daynumber_to_retrieve_from_db = str((int(daynumber)+i-1)%days_in_year+1)
            activities = activities | Activity.objects.filter(user=user_request, date=daynumber_to_retrieve_from_db)
     serializer = ActivitySerializer(activities, many=True)
+    return serializer
+
+def retrieve_categories_from_db(user_request):
+    categories = Category.objects.filter(user=user_request)
+    serializer = CategorySerializer(categories, many=True)
     return serializer

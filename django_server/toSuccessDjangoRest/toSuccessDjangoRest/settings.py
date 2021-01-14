@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/3.0/ref/settings/
 """
 
 import os
+from datetime import timedelta
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -25,7 +26,7 @@ SECRET_KEY = '*i(7)0gy6w#stc7+^%%ejpk6%+j+4=ihc8zd%p(g&2wl8lm85%'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ["0.0.0.0", "62.16.199.208", "10.0.0.18", "vegsja.pythonanywhere.com"]
+ALLOWED_HOSTS = ["0.0.0.0", "62.16.199.208", "10.0.0.18", "vegsja.pythonanywhere.com", "https://tosuccess.vercel.app/", "https://objective-jackson-78695a.netlify.app/", "https://vegsja.github.io/"]
 
 
 # Application definition
@@ -41,6 +42,7 @@ INSTALLED_APPS = [
     'corsheaders',
     'rest_framework',
     'rest_framework.authtoken',
+    'rest_framework_simplejwt.token_blacklist',
 ]
 
 MIDDLEWARE = [
@@ -117,6 +119,12 @@ REST_FRAMEWORK = {
     ],
 }
 
+SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME': timedelta(seconds=10),
+}
+
+
+CORS_ORIGIN_ALLOW_ALL = True
 
 # Internationalization
 # https://docs.djangoproject.com/en/3.0/topics/i18n/
