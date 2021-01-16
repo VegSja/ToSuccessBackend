@@ -149,11 +149,12 @@ class stats_view(APIView):
     permission_classes = (IsAuthenticated,)
 
     def get(self, request):
-        main(request.user.username)#Just to test the writing and format of the data
+        start_search_date = int(request.GET.get("start_date", 1))
+        end_search_date = int(request.GET.get("end_date", 365))
+ 
+        main(request.user.username,start_search_date,end_search_date)#Just to test the writing and format of the data
         stats = Stats.objects.all() #Change this further down the line
-        print("Found data to serialize: ", stats.values())
         serializer = StatsSerializer(stats, many=True)
-        print("Successfully serialized data: ", serializer.data)
         return JsonResponse(serializer.data, safe=False)
 
 

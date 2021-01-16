@@ -2,7 +2,7 @@ from .models import Stats, Activity, Category
 
 import json
 
-def main(connected_username):
+def main(connected_username, start_date, end_date):
     #Resets db. Should not be used in future deployment
     Stats.objects.all().delete()
     
@@ -12,11 +12,8 @@ def main(connected_username):
     #Create an empty stats dict with categories as keys. See format below
     stats_dict = create_category_dict(categories)
 
-    category_names = query_to_key_list(categories, "name")
-    for category in category_names:
-        activities_query_list = get_activities_with_category(connected_username, category)
-        stats_dict[category]["total_time"] = calculate_total_time(activities_query_list)
-
+    #Fill in data
+    fill_data_to_dict(stats_dict, connected_username, start_date, end_date) 
    
     json_to_save = json.dumps(stats_dict)
     
@@ -25,16 +22,43 @@ def main(connected_username):
     data = Stats(username=connected_username, data=json_to_save)
     data.save()
 
-    return
+def fill_data_to_dict(stats_dict, connected_username, start_date, end_date):
 
-def get_activities_with_category(username, category):
-    return Activity.objects.filter(user=username, activity_category=category)
+    for category in stats_dict.keys():
+        activities_query_list = get_activities_with_category(connected_username, category)
+        
+        #Fill in total time
+        stats_dict[category]["total_time"] = calculate_total_time(activities_query_list)
 
-def get_categories_based_on_username(username):
-    return Category.objects.filter(user=username)
+        #Fill in date based data
+        fill_date_data(activities_query_list, start_date, end_date, stats_dict[category])
+    print(stats_dict)
 
-def query_to_key_list(query_to_use, key):
-    return query_to_use.values_list(key, flat=True)
+def fill_date_data(activities_query_list, start_date, end_date, stats_dict_specified_category):
+    
+    for date in range(start_date, end_date+1):
+        activities_given_date = activities_query_list.filter(date=date)
+        stats_dict_specified_category["date_data"][date] = calculate_total_time(activities_given_date)
+
+
+#Funtion which takes acitivty querysetsi(For activities with the same category) as input and calculate time used per activity
+def calculate_total_time(activities_query):
+    total_time = 0
+
+    #Loop through every activity in query
+    for activity_query in activities_query:
+        #Get start_time
+        start_time = activity_query.minutes_after_midnight_start 
+   
+        #Get end_time
+        end_time = activity_query.minutes_after_midnight_end
+    
+
+        #Calculate total time
+        total_time += end_time-start_time
+    
+    return total_time
+
 
 def create_category_dict(categories):
     categories = query_to_key_list(categories, "name")
@@ -48,25 +72,11 @@ def create_category_dict(categories):
                 }
     return category_dict
 
-#Funtion which takes acitivty querysetsi(For activities with the same category) as input and calculate time used per activity
-def calculate_total_time(activities_query):
-    total_time = 0
+def get_activities_with_category(username, category):
+    return Activity.objects.filter(user=username, activity_category=category)
 
-    print("Activity_queries: ", activities_query)
-    #Loop through every activity in query
-    for activity_query in activities_query:
-        
-        print("Activity_query: ", activity_query)
+def get_categories_based_on_username(username):
+    return Category.objects.filter(user=username)
 
-        #Get start_time
-        start_time = activity_query.minutes_after_midnight_start 
-   
-        #Get end_time
-        end_time = activity_query.minutes_after_midnight_end
-    
-        print("Times:", start_time, end_time)
-
-        #Calculate total time
-        total_time += end_time-start_time
-    
-    return total_time
+def query_to_key_list(query_to_use, key):
+    return query_to_use.values_list(key, flat=True)
