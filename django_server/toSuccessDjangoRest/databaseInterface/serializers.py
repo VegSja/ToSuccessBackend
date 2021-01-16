@@ -15,4 +15,4 @@ class CategorySerializer(serializers.ModelSerializer):
 class StatsSerializer(serializers.ModelSerializer):
     class Meta:
         model = Stats
-        fields = ['username']
+        fields = ['username', 'data']

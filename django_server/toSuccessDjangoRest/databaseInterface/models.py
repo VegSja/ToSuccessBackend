@@ -27,5 +27,8 @@ class Category(models.Model):
 
 # For stats page
 class Stats(models.Model):
-    username = models.CharField(max_length=250)
-    data = JSONField()
+    username = models.CharField(max_length=250, default='not_defined')
+    data = JSONField(default="none")
+    
+    class meta:
+        ordering = ['created']
