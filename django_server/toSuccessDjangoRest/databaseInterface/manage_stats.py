@@ -27,19 +27,20 @@ def fill_data_to_dict(stats_dict, connected_username, start_date, end_date):
     for category in stats_dict.keys():
         activities_query_list = get_activities_with_category(connected_username, category)
         
-        #Fill in total time
-        stats_dict[category]["total_time"] = calculate_total_time(activities_query_list)
-
         #Fill in date based data
         fill_date_data(activities_query_list, start_date, end_date, stats_dict[category])
-    print(stats_dict)
 
 def fill_date_data(activities_query_list, start_date, end_date, stats_dict_specified_category):
     
+    total_time = 0
+
     for date in range(start_date, end_date+1):
         activities_given_date = activities_query_list.filter(date=date)
-        stats_dict_specified_category["date_data"][date] = calculate_total_time(activities_given_date)
+        calculated_time = calculate_total_time(activities_given_date)
+        stats_dict_specified_category["date_data"][date] = calculated_time
+        total_time += calculated_time
 
+    stats_dict_specified_category["total_time"] = total_time
 
 #Funtion which takes acitivty querysetsi(For activities with the same category) as input and calculate time used per activity
 def calculate_total_time(activities_query):
