@@ -153,7 +153,7 @@ class stats_view(APIView):
         end_search_date = int(request.GET.get("end_date", 365))
  
         main(request.user.username,start_search_date,end_search_date)#Just to test the writing and format of the data
-        stats = Stats.objects.all() #Change this further down the line
+        stats = Stats.objects.filter(username=request.user.username) #Change this further down the line
         serializer = StatsSerializer(stats, many=True)
         return JsonResponse(serializer.data, safe=False)
 

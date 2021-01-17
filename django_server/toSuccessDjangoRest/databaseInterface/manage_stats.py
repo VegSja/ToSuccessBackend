@@ -3,8 +3,10 @@ from .models import Stats, Activity, Category
 import json
 
 def main(connected_username, start_date, end_date):
+    print("Stats for: ", connected_username)
+
     #Resets db. Should not be used in future deployment
-    Stats.objects.all().delete()
+    Stats.objects.filter(username=connected_username).delete()
     
     #Get querylist of categories
     categories = get_categories_based_on_username(connected_username)
@@ -74,9 +76,11 @@ def create_category_dict(categories):
     return category_dict
 
 def get_activities_with_category(username, category):
+    print("Querying activities for", username)
     return Activity.objects.filter(user=username, activity_category=category)
 
 def get_categories_based_on_username(username):
+    print("Querying categories for", username)
     return Category.objects.filter(user=username)
 
 def query_to_key_list(query_to_use, key):
